@@ -1,0 +1,12 @@
+dist: bionic
+language: ruby
+
+before_install:
+  - sudo apt update
+  - sudo apt install libflatbuffers-dev
+
+script:
+  - bundle install
+  - gem build self-msgproto-ruby.gemspec
+  - gem install self_msgproto-*.gem -- --with-cflags=\"-std=c99\"
+  - cd gem_test && rake
