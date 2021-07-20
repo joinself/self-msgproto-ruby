@@ -102,6 +102,36 @@ inline flatbuffers::Offset<ACL> CreateACLDirect(
       payload__);
 }
 
+inline const SelfMessaging::ACL *GetACL(const void *buf) {
+  return flatbuffers::GetRoot<SelfMessaging::ACL>(buf);
+}
+
+inline const SelfMessaging::ACL *GetSizePrefixedACL(const void *buf) {
+  return flatbuffers::GetSizePrefixedRoot<SelfMessaging::ACL>(buf);
+}
+
+inline bool VerifyACLBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<SelfMessaging::ACL>(nullptr);
+}
+
+inline bool VerifySizePrefixedACLBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifySizePrefixedBuffer<SelfMessaging::ACL>(nullptr);
+}
+
+inline void FinishACLBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::ACL> root) {
+  fbb.Finish(root);
+}
+
+inline void FinishSizePrefixedACLBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::ACL> root) {
+  fbb.FinishSizePrefixed(root);
+}
+
 }  // namespace SelfMessaging
 
 #endif  // FLATBUFFERS_GENERATED_ACL_SELFMESSAGING_H_

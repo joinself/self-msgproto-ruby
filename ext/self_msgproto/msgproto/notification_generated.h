@@ -102,6 +102,36 @@ inline flatbuffers::Offset<Notification> CreateNotificationDirect(
       errtype);
 }
 
+inline const SelfMessaging::Notification *GetNotification(const void *buf) {
+  return flatbuffers::GetRoot<SelfMessaging::Notification>(buf);
+}
+
+inline const SelfMessaging::Notification *GetSizePrefixedNotification(const void *buf) {
+  return flatbuffers::GetSizePrefixedRoot<SelfMessaging::Notification>(buf);
+}
+
+inline bool VerifyNotificationBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<SelfMessaging::Notification>(nullptr);
+}
+
+inline bool VerifySizePrefixedNotificationBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifySizePrefixedBuffer<SelfMessaging::Notification>(nullptr);
+}
+
+inline void FinishNotificationBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Notification> root) {
+  fbb.Finish(root);
+}
+
+inline void FinishSizePrefixedNotificationBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Notification> root) {
+  fbb.FinishSizePrefixed(root);
+}
+
 }  // namespace SelfMessaging
 
 #endif  // FLATBUFFERS_GENERATED_NOTIFICATION_SELFMESSAGING_H_

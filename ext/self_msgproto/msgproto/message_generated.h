@@ -195,6 +195,40 @@ inline flatbuffers::Offset<Message> CreateMessageDirect(
       ciphertext__);
 }
 
+inline const SelfMessaging::Message *GetMessage(const void *buf) {
+  return flatbuffers::GetRoot<SelfMessaging::Message>(buf);
+}
+
+inline const SelfMessaging::Message *GetSizePrefixedMessage(const void *buf) {
+  return flatbuffers::GetSizePrefixedRoot<SelfMessaging::Message>(buf);
+}
+
+inline Message *GetMutableMessage(void *buf) {
+  return flatbuffers::GetMutableRoot<Message>(buf);
+}
+
+inline bool VerifyMessageBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<SelfMessaging::Message>(nullptr);
+}
+
+inline bool VerifySizePrefixedMessageBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifySizePrefixedBuffer<SelfMessaging::Message>(nullptr);
+}
+
+inline void FinishMessageBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Message> root) {
+  fbb.Finish(root);
+}
+
+inline void FinishSizePrefixedMessageBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Message> root) {
+  fbb.FinishSizePrefixed(root);
+}
+
 }  // namespace SelfMessaging
 
 #endif  // FLATBUFFERS_GENERATED_MESSAGE_SELFMESSAGING_H_

@@ -76,6 +76,36 @@ inline flatbuffers::Offset<Header> CreateHeaderDirect(
       msgtype);
 }
 
+inline const SelfMessaging::Header *GetHeader(const void *buf) {
+  return flatbuffers::GetRoot<SelfMessaging::Header>(buf);
+}
+
+inline const SelfMessaging::Header *GetSizePrefixedHeader(const void *buf) {
+  return flatbuffers::GetSizePrefixedRoot<SelfMessaging::Header>(buf);
+}
+
+inline bool VerifyHeaderBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<SelfMessaging::Header>(nullptr);
+}
+
+inline bool VerifySizePrefixedHeaderBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifySizePrefixedBuffer<SelfMessaging::Header>(nullptr);
+}
+
+inline void FinishHeaderBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Header> root) {
+  fbb.Finish(root);
+}
+
+inline void FinishSizePrefixedHeaderBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Header> root) {
+  fbb.FinishSizePrefixed(root);
+}
+
 }  // namespace SelfMessaging
 
 #endif  // FLATBUFFERS_GENERATED_HEADER_SELFMESSAGING_H_

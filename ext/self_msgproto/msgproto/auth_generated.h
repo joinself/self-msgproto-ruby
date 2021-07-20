@@ -116,6 +116,36 @@ inline flatbuffers::Offset<Auth> CreateAuthDirect(
       offset);
 }
 
+inline const SelfMessaging::Auth *GetAuth(const void *buf) {
+  return flatbuffers::GetRoot<SelfMessaging::Auth>(buf);
+}
+
+inline const SelfMessaging::Auth *GetSizePrefixedAuth(const void *buf) {
+  return flatbuffers::GetSizePrefixedRoot<SelfMessaging::Auth>(buf);
+}
+
+inline bool VerifyAuthBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifyBuffer<SelfMessaging::Auth>(nullptr);
+}
+
+inline bool VerifySizePrefixedAuthBuffer(
+    flatbuffers::Verifier &verifier) {
+  return verifier.VerifySizePrefixedBuffer<SelfMessaging::Auth>(nullptr);
+}
+
+inline void FinishAuthBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Auth> root) {
+  fbb.Finish(root);
+}
+
+inline void FinishSizePrefixedAuthBuffer(
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<SelfMessaging::Auth> root) {
+  fbb.FinishSizePrefixed(root);
+}
+
 }  // namespace SelfMessaging
 
 #endif  // FLATBUFFERS_GENERATED_AUTH_SELFMESSAGING_H_
