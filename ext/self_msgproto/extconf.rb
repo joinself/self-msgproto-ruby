@@ -1,4 +1,3 @@
-# require 'mkmf'
 require 'mkmf-rice'
 
 $CFLAGS = " -std=c99"

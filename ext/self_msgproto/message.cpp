@@ -4,9 +4,8 @@
 
 using namespace Rice;
 
-Object message_initialize(Object self, VALUE *argv)
+VALUE message_initialize(int argc, VALUE *argv, VALUE self)
 {
-    int argc;
     VALUE opts;
 
     (void)rb_scan_args(argc, argv, "0:", &opts);
@@ -24,13 +23,13 @@ Object message_initialize(Object self, VALUE *argv)
     return self;
 }
 
-extern "C"
 void message_init() {
-    Module mod = define_module("SelfMsg");
-    Class msg = define_class_under(mod, "Message");
+    VALUE cRubySelfMsg = rb_define_module("SelfMsg");
+    VALUE cMessage = rb_define_class_under(cRubySelfMsg, "Message", rb_cObject);
 
+    // rb_define_alloc_func(cMessage, _alloc);
 
-    
-    msg.define_method("initialize", &message_initialize);
+    rb_define_method(cMessage, "initialize", message_initialize, -1);
+
 }
 
