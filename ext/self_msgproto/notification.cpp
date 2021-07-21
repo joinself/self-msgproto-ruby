@@ -41,8 +41,10 @@ VALUE notification_initialize(int argc, VALUE *argv, VALUE self)
         VALUE mtypeint = rb_int2inum(mtype);
         rb_ivar_set(self, rb_intern("@type"), mtypeint);
 
-        VALUE errorstr = rb_str_new(error, std::strlen(error));
-        rb_ivar_set(self, rb_intern("@error"), errorstr);
+        if (ntf->error() != NULL) {
+            VALUE errorstr = rb_str_new(error, std::strlen(error));
+            rb_ivar_set(self, rb_intern("@error"), errorstr);
+        }
     }
 
     return self;

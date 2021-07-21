@@ -9,12 +9,12 @@ describe "SelfMsg" do
 
   describe "Message" do
   
-    let(:msg){ SelfMsg::Message.new(data: "test") }
+    #let(:msg){ SelfMsg::Message.new(data: "test") }
   
-    describe "#methods" do
+    #describe "#methods" do
   
-      it("returns a Array"){ _(msg.methods).must_be_kind_of Array }
+      #it("returns a Array"){ _(msg.methods).must_be_kind_of Array }
   
-    end
+    #end
   end
 end

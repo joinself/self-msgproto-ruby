@@ -45,11 +45,13 @@ VALUE acl_initialize(int argc, VALUE *argv, VALUE self)
         VALUE commandint = rb_int2inum(command);
         rb_ivar_set(self, rb_intern("@command"), commandint);
 
-        const u_char *payloaddata = payload->data();
-        long payloadsize = payload->size();
+        if (payload != NULL) {
+            const u_char *payloaddata = payload->data();
+            long payloadsize = payload->size();
 
-        VALUE payloadstr = rb_str_new((const char *)payloaddata, payloadsize);
-        rb_ivar_set(self, rb_intern("@payload"), payloadstr);
+            VALUE payloadstr = rb_str_new((const char *)payloaddata, payloadsize);
+            rb_ivar_set(self, rb_intern("@payload"), payloadstr);
+        }
     }
 
     return self;
@@ -70,8 +72,14 @@ VALUE acl_to_fb(VALUE self)
     }
 
     VALUE payloadv = rb_ivar_get(self, rb_intern("@payload"));
-    u_char *payloadstr = (u_char *)RSTRING_PTR(payloadv);
-    long payloadlen = RSTRING_LEN(payloadv);
+
+    u_char *payloadstr;
+    long payloadlen;
+
+    if (payloadv != Qnil) {
+        payloadstr = (u_char *)RSTRING_PTR(payloadv);
+        payloadlen = RSTRING_LEN(payloadv);
+    }
 
     flatbuffers::FlatBufferBuilder builder(1024);
 
@@ -83,7 +91,10 @@ VALUE acl_to_fb(VALUE self)
     acl_builder.add_id(id);
     acl_builder.add_msgtype(MsgType_ACL);
     acl_builder.add_command(command);
-    acl_builder.add_payload(payload);
+
+    if (payloadv != Qnil) {
+        acl_builder.add_payload(payload);
+    }
 
     auto acl = acl_builder.Finish();
     builder.Finish(acl);
