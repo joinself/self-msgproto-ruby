@@ -9,4 +9,15 @@ require 'self_msgproto/notification'
 require 'self_msgproto/self_msgproto'
 
 module SelfMsg
+
+  MsgTypeMSG = 0
+  MsgTypeACK = 1
+  MsgTypeERR = 2
+  MsgTypeAUTH = 3
+  MsgTypeACL = 4
+
+  AclCommandLIST = 0
+  AclCommandPERMIT = 1 
+  AclCommandREVOKE = 2 
+  
 end
