@@ -3,7 +3,6 @@
 #include "flatbuffers/flatbuffers.h"
 #include "msgproto/message_generated.h"
 
-// using namespace Rice;
 using namespace SelfMessaging;
 
 VALUE message_initialize(int argc, VALUE *argv, VALUE self)
@@ -29,7 +28,7 @@ VALUE message_initialize(int argc, VALUE *argv, VALUE self)
         flatbuffers::Verifier verifier(data_ptr, data_len);
 
         if (!VerifyMessageBuffer(verifier)) {
-            rb_raise(rb_eTypeError, "message buffer is invalid");
+            rb_raise(rb_eStandardError, "message buffer is invalid");
         }
 
         // std::cout << std::strlen(msg->id()->c_str()) << std::endl;
@@ -116,6 +115,8 @@ VALUE message_to_fb(VALUE self)
     int size = builder.GetSize();
 
     VALUE data = rb_str_new((char *)buf, size);
+
+    builder.Release();
 
     return data;
 }
