@@ -24,31 +24,50 @@ VALUE message_initialize(int argc, VALUE *argv, VALUE self)
         const uint8_t *data_ptr = (uint8_t *)RSTRING_PTR(data);
         long data_len = RSTRING_LEN(data);
 
-        std::cout << "Im running!" << std::endl;
-
         auto msg = GetMessage(data_ptr);
 
-        auto verifier = flatbuffers::Verifier(data_ptr, data_len);
+        flatbuffers::Verifier verifier(data_ptr, data_len);
 
-        if (!VerifyMessageBuffer(*verifier)) {
+        if (!VerifyMessageBuffer(verifier)) {
             rb_raise(rb_eTypeError, "message buffer is invalid");
-        } else {
-            std::cout << "buffer is ok!" << std::endl;
         }
 
-        auto id = msg->id();
+        // std::cout << std::strlen(msg->id()->c_str()) << std::endl;
+
+        auto id = msg->id()->c_str();
         auto mtype = msg->msgtype();
         auto stype = msg->subtype();
-        auto sender = msg->sender();
-        auto recipient = msg->recipient();
+        auto sender = msg->sender()->c_str();
+        auto recipient = msg->recipient()->c_str();
         auto ciphertext = msg->ciphertext();
 
-        // std::cout << strlen(id->c_str()) << std::endl;
+        VALUE idstr = rb_str_new(id, std::strlen(id));
+        rb_ivar_set(self, rb_intern("@id"), idstr);
 
-        //VALUE idstr = rb_str_new(id->c_str(), strlen(id->c_str()));
-        //rb_ivar_set(self, rb_intern("id"), idstr);
+        VALUE mtypeint = rb_int2inum(mtype);
+        rb_ivar_set(self, rb_intern("@type"), mtypeint);
+
+        VALUE stypeint = rb_int2inum(stype);
+        rb_ivar_set(self, rb_intern("@subtype"), stypeint);
+
+        VALUE senderstr = rb_str_new(sender, std::strlen(sender));
+        rb_ivar_set(self, rb_intern("@sender"), senderstr);
+
+        VALUE recipientstr = rb_str_new(recipient, std::strlen(recipient));
+        rb_ivar_set(self, rb_intern("@recipient"), recipientstr);
+
+        const u_char *ciphertextdata = ciphertext->data();
+        long ciphertextsize = ciphertext->size();
+
+        VALUE ciphertextstr = rb_str_new((const char *)ciphertextdata, ciphertextsize);
+        rb_ivar_set(self, rb_intern("@ciphertext"), ciphertextstr);
     }
 
+    return self;
+}
+
+static VALUE message_to_fb(VALUE self) 
+{
     return self;
 }
 
@@ -57,5 +76,6 @@ void message_init() {
     VALUE cMessage = rb_define_class_under(cRubySelfMsg, "Message", rb_cObject);
 
     rb_define_method(cMessage, "initialize", message_initialize, -1);
+    rb_define_method(cMessage, "to_fb", message_to_fb, 0);
 }
 
