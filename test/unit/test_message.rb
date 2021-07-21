@@ -12,9 +12,13 @@ class TestMessage < Minitest::Test
     p m.id
     p m.type
     p m.subtype
+    p m.offset
+    p m.timestamp
     p m.sender
     p m.recipient
     p m.ciphertext
+
+    p m.to_fb
   end
 
 end

@@ -40,6 +40,10 @@ VALUE message_initialize(int argc, VALUE *argv, VALUE self)
         auto sender = msg->sender()->c_str();
         auto recipient = msg->recipient()->c_str();
         auto ciphertext = msg->ciphertext();
+        auto metadata = msg->metadata();
+
+        auto offset = metadata->offset();
+        auto timestamp = metadata->timestamp();
 
         VALUE idstr = rb_str_new(id, std::strlen(id));
         rb_ivar_set(self, rb_intern("@id"), idstr);
@@ -49,6 +53,12 @@ VALUE message_initialize(int argc, VALUE *argv, VALUE self)
 
         VALUE stypeint = rb_int2inum(stype);
         rb_ivar_set(self, rb_intern("@subtype"), stypeint);
+
+        VALUE offsetint = rb_int2inum(offset);
+        rb_ivar_set(self, rb_intern("@offset"), offsetint);
+
+        VALUE timestampint = rb_int2inum(timestamp);
+        rb_ivar_set(self, rb_intern("@timestamp"), timestampint);
 
         VALUE senderstr = rb_str_new(sender, std::strlen(sender));
         rb_ivar_set(self, rb_intern("@sender"), senderstr);
@@ -66,9 +76,48 @@ VALUE message_initialize(int argc, VALUE *argv, VALUE self)
     return self;
 }
 
-static VALUE message_to_fb(VALUE self) 
+VALUE message_to_fb(VALUE self) 
 {
-    return self;
+    VALUE idv = rb_ivar_get(self, rb_intern("@id"));
+    char *idstr = RSTRING_PTR(idv);
+
+    VALUE senderv = rb_ivar_get(self, rb_intern("@sender"));
+    char *senderstr = RSTRING_PTR(senderv);
+
+    VALUE recipientv = rb_ivar_get(self, rb_intern("@recipient"));
+    char *recipientstr = RSTRING_PTR(recipientv);
+
+    VALUE ciphertextv = rb_ivar_get(self, rb_intern("@ciphertext"));
+    u_char *ciphertextstr = (u_char *)RSTRING_PTR(ciphertextv);
+    long ciphertextlen = RSTRING_LEN(ciphertextv);
+
+    flatbuffers::FlatBufferBuilder builder(1024);
+
+    auto id = builder.CreateString(idstr);
+    auto sender = builder.CreateString(senderstr);
+    auto recipient = builder.CreateString(recipientstr);
+    auto ciphertext = builder.CreateVector(ciphertextstr, ciphertextlen);
+
+    SelfMessaging::Metadata metadata(0, 0);
+
+    MessageBuilder msg_builder(builder);
+
+    msg_builder.add_id(id);
+    msg_builder.add_msgtype(MsgType_MSG);
+    msg_builder.add_sender(sender);
+    msg_builder.add_recipient(recipient);
+    msg_builder.add_ciphertext(ciphertext);
+    msg_builder.add_metadata(&metadata);
+
+    auto msg = msg_builder.Finish();
+    builder.Finish(msg);
+
+    uint8_t *buf = builder.GetBufferPointer();
+    int size = builder.GetSize();
+
+    VALUE data = rb_str_new((char *)buf, size);
+
+    return data;
 }
 
 void message_init() {
