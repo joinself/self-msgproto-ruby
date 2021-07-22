@@ -48,6 +48,6 @@ void header_init() {
     VALUE cRubySelfMsg = rb_define_module("SelfMsg");
     VALUE cHeader = rb_define_class_under(cRubySelfMsg, "Header", rb_cObject);
 
-    rb_define_method(cHeader, "initialize", header_initialize, -1);
+    rb_define_method(cHeader, "initialize", reinterpret_cast< VALUE ( * ) ( ... ) >(header_initialize), -1);
 }
 

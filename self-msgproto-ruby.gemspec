@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
     s.extensions = ["ext/self_msgproto/extconf.rb"]
     s.license = "MIT"
     s.test_files = Dir.glob("test/**/*.rb")
-    s.add_development_dependency 'rice'
+    s.add_dependency 'rice'
     s.add_development_dependency 'rake-compiler'
     s.add_development_dependency 'rake'
     s.add_development_dependency 'minitest'

@@ -67,7 +67,7 @@ VALUE acl_to_fb(VALUE self)
 
     ACLCommand command;
 
-    if (commandint < ACLCommand_MIN || commandint > ACLCommand_MAX) {
+    if (commandint > ACLCommand_MAX) {
         rb_raise(rb_eStandardError, "acl command is invalid");
     }
 
@@ -113,7 +113,7 @@ void acl_init() {
     VALUE cRubySelfMsg = rb_define_module("SelfMsg");
     VALUE cAcl = rb_define_class_under(cRubySelfMsg, "Acl", rb_cObject);
 
-    rb_define_method(cAcl, "initialize", acl_initialize, -1);
-    rb_define_method(cAcl, "to_fb", acl_to_fb, 0);
+    rb_define_method(cAcl, "initialize", reinterpret_cast< VALUE ( * ) ( ... ) >(acl_initialize), -1);
+    rb_define_method(cAcl, "to_fb", reinterpret_cast< VALUE ( * ) ( ... ) >(acl_to_fb), 0);
 }
 

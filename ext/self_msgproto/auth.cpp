@@ -101,7 +101,7 @@ void auth_init() {
     VALUE cRubySelfMsg = rb_define_module("SelfMsg");
     VALUE cAuth = rb_define_class_under(cRubySelfMsg, "Auth", rb_cObject);
 
-    rb_define_method(cAuth, "initialize", auth_initialize, -1);
-    rb_define_method(cAuth, "to_fb", auth_to_fb, 0);
+    rb_define_method(cAuth, "initialize", reinterpret_cast< VALUE ( * ) ( ... ) >(auth_initialize), -1);
+    rb_define_method(cAuth, "to_fb", reinterpret_cast< VALUE ( * ) ( ... ) >(auth_to_fb), 0);
 }
 

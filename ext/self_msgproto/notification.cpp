@@ -54,6 +54,6 @@ void notification_init() {
     VALUE cRubySelfMsg = rb_define_module("SelfMsg");
     VALUE cHeader = rb_define_class_under(cRubySelfMsg, "Notification", rb_cObject);
 
-    rb_define_method(cHeader, "initialize", notification_initialize, -1);
+    rb_define_method(cHeader, "initialize", reinterpret_cast< VALUE ( * ) ( ... ) >(notification_initialize), -1);
 }
 

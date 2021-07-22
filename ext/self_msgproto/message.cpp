@@ -125,7 +125,7 @@ void message_init() {
     VALUE cRubySelfMsg = rb_define_module("SelfMsg");
     VALUE cMessage = rb_define_class_under(cRubySelfMsg, "Message", rb_cObject);
 
-    rb_define_method(cMessage, "initialize", message_initialize, -1);
-    rb_define_method(cMessage, "to_fb", message_to_fb, 0);
+    rb_define_method(cMessage, "initialize", reinterpret_cast< VALUE ( * ) ( ... ) >(message_initialize), -1);
+    rb_define_method(cMessage, "to_fb", reinterpret_cast< VALUE ( * ) ( ... ) >(message_to_fb), 0);
 }
 
