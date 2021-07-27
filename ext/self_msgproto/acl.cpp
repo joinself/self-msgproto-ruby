@@ -63,17 +63,20 @@ VALUE acl_to_fb(VALUE self)
     char *idstr = RSTRING_PTR(idv);
 
     VALUE commandv = rb_ivar_get(self, rb_intern("@command"));
-    uint8_t commandint = NUM2INT(commandv);
+    int64_t commandint = NUM2INT(commandv);
 
     ACLCommand command;
 
     switch(commandint) {
     case 0:
         command = ACLCommand_LIST;
+        break;
     case 1:
         command = ACLCommand_PERMIT;
+        break;
     case 2:
         command = ACLCommand_REVOKE;
+        break;
     default:
         rb_raise(rb_eStandardError, "acl command is invalid");
     }

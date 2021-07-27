@@ -13,6 +13,9 @@ class TestMessage < Minitest::Test
     p h.type
     p h.command
     p h.payload
+
+    p h.command = SelfMsg::AclCommandPERMIT
+    p h.to_fb
   end
 
 end
