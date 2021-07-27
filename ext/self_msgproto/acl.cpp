@@ -67,7 +67,14 @@ VALUE acl_to_fb(VALUE self)
 
     ACLCommand command;
 
-    if (commandint > ACLCommand_MAX) {
+    switch(commandint) {
+    case 0:
+        command = ACLCommand_LIST;
+    case 1:
+        command = ACLCommand_PERMIT;
+    case 2:
+        command = ACLCommand_REVOKE;
+    default:
         rb_raise(rb_eStandardError, "acl command is invalid");
     }
 
