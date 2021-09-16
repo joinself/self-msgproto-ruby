@@ -85,6 +85,7 @@ VALUE acl_to_fb(VALUE self)
 
     u_char *payloadstr;
     long payloadlen;
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> payload;
 
     if (payloadv != Qnil) {
         payloadstr = (u_char *)RSTRING_PTR(payloadv);
@@ -94,7 +95,10 @@ VALUE acl_to_fb(VALUE self)
     flatbuffers::FlatBufferBuilder builder(1024);
 
     auto id = builder.CreateString(idstr);
-    auto payload = builder.CreateVector(payloadstr, payloadlen);
+
+    if (payloadv != Qnil) {
+        payload = builder.CreateVector(payloadstr, payloadlen);
+    }
 
     ACLBuilder acl_builder(builder);
 
