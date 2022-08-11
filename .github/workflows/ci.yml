@@ -20,7 +20,9 @@ jobs:
           cd /tmp/flatbuffers && git checkout v2.0.0 && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && make install
 
       - name: Install dependencies
-        run: bundle install
+        run: |
+          gem install -y rake
+          bundle install
 
       - name: Test Package
         run: rake test
