@@ -1,0 +1,26 @@
+name: CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ruby:2.6.3
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup environment
+        run: |
+          apt-get update
+          apt-get -y install curl cmake build-essential
+          cd /tmp && git clone https://github.com/google/flatbuffers.git
+          cd /tmp/flatbuffers && git checkout v2.0.0 && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && make install
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Test Package
+        run: rake test
