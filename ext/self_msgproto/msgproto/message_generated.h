@@ -32,14 +32,8 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) Metadata FLATBUFFERS_FINAL_CLASS {
   int64_t timestamp() const {
     return flatbuffers::EndianScalar(timestamp_);
   }
-  void mutate_timestamp(int64_t _timestamp) {
-    flatbuffers::WriteScalar(&timestamp_, _timestamp);
-  }
   int64_t offset() const {
     return flatbuffers::EndianScalar(offset_);
-  }
-  void mutate_offset(int64_t _offset) {
-    flatbuffers::WriteScalar(&offset_, _offset);
   }
 };
 FLATBUFFERS_STRUCT_END(Metadata, 16);
@@ -53,49 +47,44 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_SENDER = 10,
     VT_RECIPIENT = 12,
     VT_METADATA = 14,
-    VT_CIPHERTEXT = 16
+    VT_CIPHERTEXT = 16,
+    VT_PRIORITY = 20,
+    VT_MESSAGE_TYPE = 22,
+    VT_COLLAPSE_KEY = 24,
+    VT_NOTIFICATION_PAYLOAD = 26
   };
   const flatbuffers::String *id() const {
     return GetPointer<const flatbuffers::String *>(VT_ID);
   }
-  flatbuffers::String *mutable_id() {
-    return GetPointer<flatbuffers::String *>(VT_ID);
-  }
   SelfMessaging::MsgType msgtype() const {
     return static_cast<SelfMessaging::MsgType>(GetField<int8_t>(VT_MSGTYPE, 0));
-  }
-  bool mutate_msgtype(SelfMessaging::MsgType _msgtype) {
-    return SetField<int8_t>(VT_MSGTYPE, static_cast<int8_t>(_msgtype), 0);
   }
   SelfMessaging::MsgSubType subtype() const {
     return static_cast<SelfMessaging::MsgSubType>(GetField<uint16_t>(VT_SUBTYPE, 0));
   }
-  bool mutate_subtype(SelfMessaging::MsgSubType _subtype) {
-    return SetField<uint16_t>(VT_SUBTYPE, static_cast<uint16_t>(_subtype), 0);
-  }
   const flatbuffers::String *sender() const {
     return GetPointer<const flatbuffers::String *>(VT_SENDER);
-  }
-  flatbuffers::String *mutable_sender() {
-    return GetPointer<flatbuffers::String *>(VT_SENDER);
   }
   const flatbuffers::String *recipient() const {
     return GetPointer<const flatbuffers::String *>(VT_RECIPIENT);
   }
-  flatbuffers::String *mutable_recipient() {
-    return GetPointer<flatbuffers::String *>(VT_RECIPIENT);
-  }
   const SelfMessaging::Metadata *metadata() const {
     return GetStruct<const SelfMessaging::Metadata *>(VT_METADATA);
-  }
-  SelfMessaging::Metadata *mutable_metadata() {
-    return GetStruct<SelfMessaging::Metadata *>(VT_METADATA);
   }
   const flatbuffers::Vector<uint8_t> *ciphertext() const {
     return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_CIPHERTEXT);
   }
-  flatbuffers::Vector<uint8_t> *mutable_ciphertext() {
-    return GetPointer<flatbuffers::Vector<uint8_t> *>(VT_CIPHERTEXT);
+  uint32_t priority() const {
+    return GetField<uint32_t>(VT_PRIORITY, 0);
+  }
+  const flatbuffers::Vector<uint8_t> *message_type() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_MESSAGE_TYPE);
+  }
+  const flatbuffers::Vector<uint8_t> *collapse_key() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_COLLAPSE_KEY);
+  }
+  const flatbuffers::Vector<uint8_t> *notification_payload() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_NOTIFICATION_PAYLOAD);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -110,6 +99,13 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyFieldRequired<SelfMessaging::Metadata>(verifier, VT_METADATA) &&
            VerifyOffset(verifier, VT_CIPHERTEXT) &&
            verifier.VerifyVector(ciphertext()) &&
+           VerifyField<uint32_t>(verifier, VT_PRIORITY) &&
+           VerifyOffset(verifier, VT_MESSAGE_TYPE) &&
+           verifier.VerifyVector(message_type()) &&
+           VerifyOffset(verifier, VT_COLLAPSE_KEY) &&
+           verifier.VerifyVector(collapse_key()) &&
+           VerifyOffset(verifier, VT_NOTIFICATION_PAYLOAD) &&
+           verifier.VerifyVector(notification_payload()) &&
            verifier.EndTable();
   }
 };
@@ -139,6 +135,18 @@ struct MessageBuilder {
   void add_ciphertext(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> ciphertext) {
     fbb_.AddOffset(Message::VT_CIPHERTEXT, ciphertext);
   }
+  void add_priority(uint32_t priority) {
+    fbb_.AddElement<uint32_t>(Message::VT_PRIORITY, priority, 0);
+  }
+  void add_message_type(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> message_type) {
+    fbb_.AddOffset(Message::VT_MESSAGE_TYPE, message_type);
+  }
+  void add_collapse_key(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> collapse_key) {
+    fbb_.AddOffset(Message::VT_COLLAPSE_KEY, collapse_key);
+  }
+  void add_notification_payload(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> notification_payload) {
+    fbb_.AddOffset(Message::VT_NOTIFICATION_PAYLOAD, notification_payload);
+  }
   explicit MessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -159,8 +167,16 @@ inline flatbuffers::Offset<Message> CreateMessage(
     flatbuffers::Offset<flatbuffers::String> sender = 0,
     flatbuffers::Offset<flatbuffers::String> recipient = 0,
     const SelfMessaging::Metadata *metadata = 0,
-    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> ciphertext = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> ciphertext = 0,
+    uint32_t priority = 0,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> message_type = 0,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> collapse_key = 0,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> notification_payload = 0) {
   MessageBuilder builder_(_fbb);
+  builder_.add_notification_payload(notification_payload);
+  builder_.add_collapse_key(collapse_key);
+  builder_.add_message_type(message_type);
+  builder_.add_priority(priority);
   builder_.add_ciphertext(ciphertext);
   builder_.add_metadata(metadata);
   builder_.add_recipient(recipient);
@@ -179,11 +195,18 @@ inline flatbuffers::Offset<Message> CreateMessageDirect(
     const char *sender = nullptr,
     const char *recipient = nullptr,
     const SelfMessaging::Metadata *metadata = 0,
-    const std::vector<uint8_t> *ciphertext = nullptr) {
+    const std::vector<uint8_t> *ciphertext = nullptr,
+    uint32_t priority = 0,
+    const std::vector<uint8_t> *message_type = nullptr,
+    const std::vector<uint8_t> *collapse_key = nullptr,
+    const std::vector<uint8_t> *notification_payload = nullptr) {
   auto id__ = id ? _fbb.CreateString(id) : 0;
   auto sender__ = sender ? _fbb.CreateString(sender) : 0;
   auto recipient__ = recipient ? _fbb.CreateString(recipient) : 0;
   auto ciphertext__ = ciphertext ? _fbb.CreateVector<uint8_t>(*ciphertext) : 0;
+  auto message_type__ = message_type ? _fbb.CreateVector<uint8_t>(*message_type) : 0;
+  auto collapse_key__ = collapse_key ? _fbb.CreateVector<uint8_t>(*collapse_key) : 0;
+  auto notification_payload__ = notification_payload ? _fbb.CreateVector<uint8_t>(*notification_payload) : 0;
   return SelfMessaging::CreateMessage(
       _fbb,
       id__,
@@ -192,7 +215,11 @@ inline flatbuffers::Offset<Message> CreateMessageDirect(
       sender__,
       recipient__,
       metadata,
-      ciphertext__);
+      ciphertext__,
+      priority,
+      message_type__,
+      collapse_key__,
+      notification_payload__);
 }
 
 inline const SelfMessaging::Message *GetMessage(const void *buf) {
@@ -201,10 +228,6 @@ inline const SelfMessaging::Message *GetMessage(const void *buf) {
 
 inline const SelfMessaging::Message *GetSizePrefixedMessage(const void *buf) {
   return flatbuffers::GetSizePrefixedRoot<SelfMessaging::Message>(buf);
-}
-
-inline Message *GetMutableMessage(void *buf) {
-  return flatbuffers::GetMutableRoot<Message>(buf);
 }
 
 inline bool VerifyMessageBuffer(

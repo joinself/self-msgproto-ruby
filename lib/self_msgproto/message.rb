@@ -3,7 +3,7 @@
 module SelfMsg
 
   class Message
-    attr_accessor :id, :type, :subtype, :sender, :recipient, :ciphertext
+    attr_accessor :id, :type, :sender, :recipient, :ciphertext, :message_type, :priority
     attr_reader :timestamp, :offset
   end
 
