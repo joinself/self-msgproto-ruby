@@ -105,8 +105,8 @@ VALUE message_to_fb(VALUE self)
     VALUE message_type_v = rb_ivar_get(self, rb_intern("@message_type"));
 
     if (message_type_v != Qnil) {
-        u_char *message_type_str = (u_char *)RSTRING_PTR(message_type_v);
-        long message_type_len = RSTRING_LEN(message_type_v);
+        message_type_str = (u_char *)RSTRING_PTR(message_type_v);
+        message_type_len = RSTRING_LEN(message_type_v);
     }
 
     VALUE ciphertext_v = rb_ivar_get(self, rb_intern("@ciphertext"));
