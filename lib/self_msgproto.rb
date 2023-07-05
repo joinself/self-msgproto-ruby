@@ -1,7 +1,6 @@
 # Copyright 2020 Self Group Ltd. All Rights Reserved.
 
 require 'self_msgproto/version'
-require 'self_msgproto/acl'
 require 'self_msgproto/auth'
 require 'self_msgproto/header'
 require 'self_msgproto/message'
@@ -14,10 +13,7 @@ module SelfMsg
   MsgTypeACK = 1
   MsgTypeERR = 2
   MsgTypeAUTH = 3
-  MsgTypeACL = 4
-
-  AclCommandLIST = 0
-  AclCommandPERMIT = 1 
-  AclCommandREVOKE = 2 
+  MsgTypeWatch = 5
+  MsgTypeStatus = 6
   
 end

@@ -8,48 +8,15 @@
 
 namespace SelfMessaging {
 
-enum ACLCommand {
-  ACLCommand_LIST = 0,
-  ACLCommand_PERMIT = 1,
-  ACLCommand_REVOKE = 2,
-  ACLCommand_MIN = ACLCommand_LIST,
-  ACLCommand_MAX = ACLCommand_REVOKE
-};
-
-inline const ACLCommand (&EnumValuesACLCommand())[3] {
-  static const ACLCommand values[] = {
-    ACLCommand_LIST,
-    ACLCommand_PERMIT,
-    ACLCommand_REVOKE
-  };
-  return values;
-}
-
-inline const char * const *EnumNamesACLCommand() {
-  static const char * const names[4] = {
-    "LIST",
-    "PERMIT",
-    "REVOKE",
-    nullptr
-  };
-  return names;
-}
-
-inline const char *EnumNameACLCommand(ACLCommand e) {
-  if (flatbuffers::IsOutRange(e, ACLCommand_LIST, ACLCommand_REVOKE)) return "";
-  const size_t index = static_cast<size_t>(e);
-  return EnumNamesACLCommand()[index];
-}
-
-enum ErrType {
+enum ErrType : int8_t {
   ErrType_ErrConnection = 0,
   ErrType_ErrBadRequest = 1,
   ErrType_ErrInternal = 2,
   ErrType_ErrMessage = 3,
   ErrType_ErrAuth = 4,
-  ErrType_ErrACL = 5,
+  ErrType_ErrWatch = 6,
   ErrType_MIN = ErrType_ErrConnection,
-  ErrType_MAX = ErrType_ErrACL
+  ErrType_MAX = ErrType_ErrWatch
 };
 
 inline const ErrType (&EnumValuesErrType())[6] {
@@ -59,70 +26,75 @@ inline const ErrType (&EnumValuesErrType())[6] {
     ErrType_ErrInternal,
     ErrType_ErrMessage,
     ErrType_ErrAuth,
-    ErrType_ErrACL
+    ErrType_ErrWatch
   };
   return values;
 }
 
 inline const char * const *EnumNamesErrType() {
-  static const char * const names[7] = {
+  static const char * const names[8] = {
     "ErrConnection",
     "ErrBadRequest",
     "ErrInternal",
     "ErrMessage",
     "ErrAuth",
-    "ErrACL",
+    "",
+    "ErrWatch",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameErrType(ErrType e) {
-  if (flatbuffers::IsOutRange(e, ErrType_ErrConnection, ErrType_ErrACL)) return "";
+  if (flatbuffers::IsOutRange(e, ErrType_ErrConnection, ErrType_ErrWatch)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesErrType()[index];
 }
 
-enum MsgType {
+enum MsgType : int8_t {
   MsgType_MSG = 0,
   MsgType_ACK = 1,
   MsgType_ERR = 2,
   MsgType_AUTH = 3,
-  MsgType_ACL = 4,
+  MsgType_WTC = 5,
+  MsgType_STS = 6,
   MsgType_MIN = MsgType_MSG,
-  MsgType_MAX = MsgType_ACL
+  MsgType_MAX = MsgType_STS
 };
 
-inline const MsgType (&EnumValuesMsgType())[5] {
+inline const MsgType (&EnumValuesMsgType())[6] {
   static const MsgType values[] = {
     MsgType_MSG,
     MsgType_ACK,
     MsgType_ERR,
     MsgType_AUTH,
-    MsgType_ACL
+    MsgType_WTC,
+    MsgType_STS
   };
   return values;
 }
 
 inline const char * const *EnumNamesMsgType() {
-  static const char * const names[6] = {
+  static const char * const names[8] = {
     "MSG",
     "ACK",
     "ERR",
     "AUTH",
-    "ACL",
+    "",
+    "WTC",
+    "STS",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameMsgType(MsgType e) {
-  if (flatbuffers::IsOutRange(e, MsgType_MSG, MsgType_ACL)) return "";
+  if (flatbuffers::IsOutRange(e, MsgType_MSG, MsgType_STS)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesMsgType()[index];
 }
 
-enum MsgSubType {
+enum MsgSubType : uint16_t {
   MsgSubType_Unknown = 0,
   MsgSubType_AuthenticationReq = 1,
   MsgSubType_AuthenticationResp = 2,
