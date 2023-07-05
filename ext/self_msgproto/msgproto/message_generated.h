@@ -51,7 +51,8 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_PRIORITY = 20,
     VT_MESSAGE_TYPE = 22,
     VT_COLLAPSE_KEY = 24,
-    VT_NOTIFICATION_PAYLOAD = 26
+    VT_NOTIFICATION_PAYLOAD = 26,
+    VT_AUTHORIZATION = 28
   };
   const flatbuffers::String *id() const {
     return GetPointer<const flatbuffers::String *>(VT_ID);
@@ -86,6 +87,9 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::Vector<uint8_t> *notification_payload() const {
     return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_NOTIFICATION_PAYLOAD);
   }
+  const flatbuffers::Vector<uint8_t> *authorization() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_AUTHORIZATION);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_ID) &&
@@ -106,6 +110,8 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyVector(collapse_key()) &&
            VerifyOffset(verifier, VT_NOTIFICATION_PAYLOAD) &&
            verifier.VerifyVector(notification_payload()) &&
+           VerifyOffset(verifier, VT_AUTHORIZATION) &&
+           verifier.VerifyVector(authorization()) &&
            verifier.EndTable();
   }
 };
@@ -147,6 +153,9 @@ struct MessageBuilder {
   void add_notification_payload(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> notification_payload) {
     fbb_.AddOffset(Message::VT_NOTIFICATION_PAYLOAD, notification_payload);
   }
+  void add_authorization(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> authorization) {
+    fbb_.AddOffset(Message::VT_AUTHORIZATION, authorization);
+  }
   explicit MessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -171,8 +180,10 @@ inline flatbuffers::Offset<Message> CreateMessage(
     uint32_t priority = 0,
     flatbuffers::Offset<flatbuffers::Vector<uint8_t>> message_type = 0,
     flatbuffers::Offset<flatbuffers::Vector<uint8_t>> collapse_key = 0,
-    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> notification_payload = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> notification_payload = 0,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> authorization = 0) {
   MessageBuilder builder_(_fbb);
+  builder_.add_authorization(authorization);
   builder_.add_notification_payload(notification_payload);
   builder_.add_collapse_key(collapse_key);
   builder_.add_message_type(message_type);
@@ -199,7 +210,8 @@ inline flatbuffers::Offset<Message> CreateMessageDirect(
     uint32_t priority = 0,
     const std::vector<uint8_t> *message_type = nullptr,
     const std::vector<uint8_t> *collapse_key = nullptr,
-    const std::vector<uint8_t> *notification_payload = nullptr) {
+    const std::vector<uint8_t> *notification_payload = nullptr,
+    const std::vector<uint8_t> *authorization = nullptr) {
   auto id__ = id ? _fbb.CreateString(id) : 0;
   auto sender__ = sender ? _fbb.CreateString(sender) : 0;
   auto recipient__ = recipient ? _fbb.CreateString(recipient) : 0;
@@ -207,6 +219,7 @@ inline flatbuffers::Offset<Message> CreateMessageDirect(
   auto message_type__ = message_type ? _fbb.CreateVector<uint8_t>(*message_type) : 0;
   auto collapse_key__ = collapse_key ? _fbb.CreateVector<uint8_t>(*collapse_key) : 0;
   auto notification_payload__ = notification_payload ? _fbb.CreateVector<uint8_t>(*notification_payload) : 0;
+  auto authorization__ = authorization ? _fbb.CreateVector<uint8_t>(*authorization) : 0;
   return SelfMessaging::CreateMessage(
       _fbb,
       id__,
@@ -219,7 +232,8 @@ inline flatbuffers::Offset<Message> CreateMessageDirect(
       priority,
       message_type__,
       collapse_key__,
-      notification_payload__);
+      notification_payload__,
+      authorization__);
 }
 
 inline const SelfMessaging::Message *GetMessage(const void *buf) {

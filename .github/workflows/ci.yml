@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ruby:2.6.3
+      image: ruby:3.0.0
 
     steps:
       - uses: actions/checkout@v2
@@ -25,4 +25,4 @@ jobs:
           bundle install
 
       - name: Test Package
-        run: rake test
+        run: bundle exec rake test
