@@ -21,9 +21,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          gem install rake
           gem update bundler
+          gem install rake
           bundle install
 
       - name: Test Package
-        run: rake test
+        run: bundle exec rake test
